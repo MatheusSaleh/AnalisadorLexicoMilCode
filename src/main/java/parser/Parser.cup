@@ -1,0 +1,62 @@
+package parser;
+
+import java_cup.runtime.*;
+import lex.Lexer;
+import lex.Token;
+
+parser code {:
+    public Parser(Lexer lexer) {
+        super(lexer);
+    }
+:};
+
+// Terminais
+terminal Token PALAVRA_CHAVE, TIPO, IDENTIFICADOR, NUMERO_INT, NUMERO_REAL;
+terminal Token TEXTO, ATRIBUICAO, OP_LOGICO, OP_MATEMATICO;
+terminal LBRACE, RBRACE, LPAREN, RPAREN, SEMI, COLON, ERRO;
+
+// Não-terminais
+non terminal programa, lista_comandos, comando;
+non terminal declaracao_variavel, expressao;
+non terminal lista_parametros, parametro;
+
+// Precedência
+precedence left OP_MATEMATICO;
+
+// Start
+start with programa;
+
+// Regras
+programa ::= PALAVRA_CHAVE:missao LPAREN lista_parametros RPAREN LBRACE lista_comandos RBRACE
+            {: System.out.println("Programa 'missao' reconhecido com sucesso!"); :};
+
+lista_parametros ::= parametro SEMI
+                   | lista_parametros parametro SEMI
+                   ;
+
+parametro ::= IDENTIFICADOR:id COLON TIPO:t ATRIBUICAO expressao:e
+            {: System.out.println("Parametro '" + id.lexema + "' do tipo '" + t.lexema + "' reconhecido."); :};
+
+lista_comandos ::= lista_comandos comando
+                 | comando
+                 ;
+
+comando ::= declaracao_variavel
+          | expressao SEMI
+          | PALAVRA_CHAVE TEXTO:texto SEMI
+          {: System.out.println("Comando: " + texto.lexema); :}
+          | PALAVRA_CHAVE IDENTIFICADOR:id SEMI
+          {: System.out.println("Comando: " + id.lexema); :}
+          ;
+
+declaracao_variavel ::= PALAVRA_CHAVE TIPO:t IDENTIFICADOR:id ATRIBUICAO expressao:e SEMI
+                      {: System.out.println("Declaracao da variavel '" + id.lexema + "' do tipo '" + t.lexema + "' reconhecida."); :};
+
+expressao ::= expressao OP_MATEMATICO:oper expressao
+            {: System.out.println("Expressao: operação " + oper.lexema); :}
+            | NUMERO_INT:num
+            {: System.out.println("Expressao: NUMERO_INT " + num.lexema); :}
+            | NUMERO_REAL:num
+            {: System.out.println("Expressao: NUMERO_REAL " + num.lexema); :}
+            | IDENTIFICADOR:id
+            {: System.out.println("Expressao: IDENTIFICADOR " + id.lexema); :};

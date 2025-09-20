@@ -43,7 +43,7 @@
                 </executions>
                 <configuration>
                     <lexDefinitions>
-                        <lexDefinition>src/main/java/Lexer.flex</lexDefinition>
+                        <lexDefinition>src/main/java/lex.Lexer.flex</lexDefinition>
                     </lexDefinitions>
                     <outputDirectory>target/generated-sources/jflex</outputDirectory>
                 </configuration>

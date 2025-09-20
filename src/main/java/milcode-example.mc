@@ -1,4 +1,10 @@
-missao (sgt_contador : inf >> 1; sgt_contador !! 10; sgt_contador >> sgt_contador + 1) {
+missao(a: int; b: float) {
+    int sgt_contador = 10;
+    float inf = 1.5;
+
+    sgt_contador = sgt_contador + 1;
+    b = b + inf;
+
     relate "Soldado número ";
     relate sgt_contador;
 };
