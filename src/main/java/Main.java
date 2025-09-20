@@ -1,37 +1,22 @@
-import javax.swing.*;
-import java.awt.*;
 import java.io.FileReader;
 import java.io.IOException;
-
-import javax.swing.*;
-import java.awt.*;
+import java_cup.runtime.Symbol;
 
 public class Main {
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Analisador Léxico - MilCode");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(600, 400);
+        try {
+            Lexer lexer = new Lexer(new FileReader("src/main/java/milcode-example.mc"));
+            Parser p = new Parser(lexer);
 
-            JTextArea textArea = new JTextArea();
-            textArea.setEditable(false);
-            JScrollPane scrollPane = new JScrollPane(textArea);
+            System.out.println("Iniciando analise sintatica...");
+            Symbol resultado = p.parse(); // retorna um Symbol
+            System.out.println("Analise sintatica concluida sem erros: " + resultado);
 
-            frame.add(scrollPane, BorderLayout.CENTER);
-            frame.setVisible(true);
-
-            try {
-                FileReader leitor = new FileReader("src/main/java/milcode-example.mc");
-                Lexer lexer = new Lexer(leitor);
-                Lexer.Token token;
-                do {
-                    token = lexer.nextToken();
-                    textArea.append(token.toString() + "\n");
-                } while (token.tipo != Lexer.TokenType.EOF);
-            } catch (IOException e) {
-                textArea.append("Erro: " + e.getMessage());
-            }
-        });
+        } catch (IOException e) {
+            System.err.println("Erro de I/O: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Erro sintatico: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
-

@@ -1,0 +1,68 @@
+// ==========================================================================
+// parser.cup – Corrigido para compatibilidade com Lexer.flex
+// ==========================================================================
+
+// Importações necessárias
+import java_cup.runtime.*;
+
+// Código de usuário dentro da classe Parser
+parser code {:
+    // Construtor que recebe o analisador léxico (Lexer)
+    public Parser(Lexer lexer) {
+        super(lexer);
+    }
+:};
+
+// ==========================================================================
+// Terminais (tokens que vêm do Lexer)
+// ==========================================================================
+
+terminal PALAVRA_CHAVE, TIPO, IDENTIFICADOR, NUMERO_INT, NUMERO_REAL;
+terminal TEXTO, ATRIBUICAO, OP_LOGICO, OP_MATEMATICO;
+terminal LBRACE, RBRACE, LPAREN, RPAREN, SEMI;
+terminal DELIMITADOR, ERRO;
+
+// ==========================================================================
+// Não-Terminais
+// ==========================================================================
+
+non terminal programa, lista_comandos, comando;
+non terminal declaracao_variavel, expressao;
+
+// ==========================================================================
+// Precedência de operadores
+// ==========================================================================
+
+precedence left OP_MATEMATICO;
+
+// ==========================================================================
+// Regra inicial
+// ==========================================================================
+
+start with programa;
+
+// ==========================================================================
+// Regras da Gramática
+// ==========================================================================
+
+programa ::= PALAVRA_CHAVE:missao LBRACE lista_comandos RBRACE
+    {: System.out.println("Programa 'missao' reconhecido com sucesso!"); :}
+    ;
+
+lista_comandos ::= lista_comandos comando
+    | comando
+    ;
+
+comando ::= declaracao_variavel
+    | expressao SEMI
+    ;
+
+declaracao_variavel ::= PALAVRA_CHAVE:rcb TIPO:t IDENTIFICADOR:id ATRIBUICAO expressao:e SEMI
+    {: System.out.println("Declaracao da variavel '" + id + "' do tipo '" + t + "' encontrada."); :}
+    ;
+
+expressao ::= expressao OP_MATEMATICO expressao
+    | NUMERO_INT
+    | NUMERO_REAL
+    | IDENTIFICADOR
+    ;
