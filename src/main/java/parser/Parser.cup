@@ -5,6 +5,7 @@ import lex.Lexer;
 import lex.Token;
 
 parser code {:
+
     public Parser(Lexer lexer) {
         super(lexer);
     }
@@ -17,7 +18,7 @@ terminal LBRACE, RBRACE, LPAREN, RPAREN, SEMI, COLON, ERRO;
 
 // Não-terminais
 non terminal programa, lista_comandos, comando;
-non terminal declaracao_variavel, expressao;
+non terminal declaracao_variavel, expressao, atribuicao; // Adicionado 'atribuicao'
 non terminal lista_parametros, parametro;
 
 // Precedência
@@ -30,27 +31,32 @@ start with programa;
 programa ::= PALAVRA_CHAVE:missao LPAREN lista_parametros RPAREN LBRACE lista_comandos RBRACE
             {: System.out.println("Programa 'missao' reconhecido com sucesso!"); :};
 
-lista_parametros ::= parametro SEMI
-                   | lista_parametros parametro SEMI
+lista_parametros ::= lista_parametros SEMI parametro
+                   | parametro
+                   | /* lista vazia */
                    ;
 
-parametro ::= IDENTIFICADOR:id COLON TIPO:t ATRIBUICAO expressao:e
+parametro ::= IDENTIFICADOR:id COLON TIPO:t
             {: System.out.println("Parametro '" + id.lexema + "' do tipo '" + t.lexema + "' reconhecido."); :};
 
+// CÓDIGO CORRIGIDO
 lista_comandos ::= lista_comandos comando
                  | comando
                  ;
 
 comando ::= declaracao_variavel
-          | expressao SEMI
-          | PALAVRA_CHAVE TEXTO:texto SEMI
-          {: System.out.println("Comando: " + texto.lexema); :}
-          | PALAVRA_CHAVE IDENTIFICADOR:id SEMI
-          {: System.out.println("Comando: " + id.lexema); :}
+          | atribuicao
+          | PALAVRA_CHAVE:relate TEXTO:texto SEMI
+            {: System.out.println("Comando relate (texto): " + texto.lexema); :}
+          | PALAVRA_CHAVE:relate IDENTIFICADOR:id SEMI
+            {: System.out.println("Comando relate (id): " + id.lexema); :}
           ;
 
-declaracao_variavel ::= PALAVRA_CHAVE TIPO:t IDENTIFICADOR:id ATRIBUICAO expressao:e SEMI
+declaracao_variavel ::= TIPO:t IDENTIFICADOR:id ATRIBUICAO expressao:e SEMI
                       {: System.out.println("Declaracao da variavel '" + id.lexema + "' do tipo '" + t.lexema + "' reconhecida."); :};
+
+atribuicao ::= IDENTIFICADOR:id ATRIBUICAO expressao:e SEMI
+             {: System.out.println("Atribuicao a '" + id.lexema + "'"); :};
 
 expressao ::= expressao OP_MATEMATICO:oper expressao
             {: System.out.println("Expressao: operação " + oper.lexema); :}

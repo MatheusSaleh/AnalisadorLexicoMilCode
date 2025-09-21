@@ -23,6 +23,8 @@ import parser.sym;
 "missao"       { return new Symbol(sym.PALAVRA_CHAVE, new Token(yytext())); }
 "int"          { return new Symbol(sym.TIPO, new Token(yytext())); }
 "float"        { return new Symbol(sym.TIPO, new Token(yytext())); }
+"relate"       { return new Symbol(sym.PALAVRA_CHAVE, new Token(yytext())); }
+
 
 // Identificadores
 [a-zA-Z_][a-zA-Z0-9_]* { return new Symbol(sym.IDENTIFICADOR, new Token(yytext())); }
